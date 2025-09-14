@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import APIPlayground from '@/components/api-playground'
-import { APIConfig } from '@/lib/types'
+import { APIConfig, APITestResponse, JSONObject } from '@/lib/types'
 
 export default function Home() {
   const [config, setConfig] = useState<APIConfig>({
@@ -15,7 +15,7 @@ export default function Home() {
   })
 
 
-  const handleTest = async (config: APIConfig): Promise<{ status_code: number; response: any }> => {
+  const handleTest = async (config: APIConfig): Promise<APITestResponse> => {
     console.log('Testing API with config:', config)
 
     // Build the full URL with query parameters
@@ -41,9 +41,9 @@ export default function Home() {
     })
 
     // Build body for POST/PUT/PATCH requests
-    let body = undefined
+    let body: string | undefined = undefined
     if (['POST', 'PUT', 'PATCH'].includes(config.method)) {
-      const bodyData: Record<string, any> = {}
+      const bodyData: JSONObject = {}
       config.body?.forEach(param => {
         if (param.key) {
           bodyData[param.key] = param.value

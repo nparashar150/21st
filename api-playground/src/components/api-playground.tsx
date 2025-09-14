@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ChevronDown, Plus, Trash2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -11,7 +11,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { cn, titleCase } from '@/lib/utils'
-import { APIConfig, APIMethod, Parameter } from '@/lib/types'
+import { APIConfig, APIMethod, Parameter, APITestResponse, CleanAPIConfig } from '@/lib/types'
 import { DUMMY_POSTS_TOOL_CONFIG, DUMMY_TODOS_TOOL_CONFIG, CREATE_POST_EXAMPLE } from '@/lib/example-configs'
 
 type TabType = 'headers' | 'path' | 'query' | 'body'
@@ -19,7 +19,7 @@ type TabType = 'headers' | 'path' | 'query' | 'body'
 interface APIPlaygroundProps {
   config?: APIConfig
   onConfigChange?: (config: APIConfig) => void
-  onTest?: (config: APIConfig) => Promise<{ status_code: number; response: any }>
+  onTest?: (config: APIConfig) => Promise<APITestResponse>
 }
 
 export default function APIPlayground({
@@ -70,7 +70,7 @@ export default function APIPlayground({
       }))
 
       return { queryParams, pathParams }
-    } catch (error) {
+    } catch {
       // If URL parsing fails, try to extract query params manually
       const queryParams: Parameter[] = []
       const pathParams: Parameter[] = []
@@ -108,12 +108,12 @@ export default function APIPlayground({
     }
   }
 
-  const updateConfig = (key: keyof APIConfig, value: any) => {
+  const updateConfig = <K extends keyof APIConfig>(key: K, value: APIConfig[K]) => {
     setConfig(prev => {
       const newConfig = { ...prev, [key]: value }
 
       // If URL is being updated, sync query and path parameters
-      if (key === 'url' && value !== prev.url && !value.startsWith('curl')) {
+      if (key === 'url' && value !== prev.url && typeof value === 'string' && !value.startsWith('curl')) {
         const { queryParams, pathParams } = parseUrlToParams(value)
 
         // Only update if the parsed params are different from current ones
@@ -146,7 +146,7 @@ export default function APIPlayground({
     activeTab === 'path' ? config.path :
     activeTab === 'body' ? config.body : []
 
-  const buildUrlFromParams = (baseUrl: string, queryParams: Parameter[], pathParams: Parameter[]) => {
+  const buildUrlFromParams = (baseUrl: string, queryParams: Parameter[]) => {
     let url = baseUrl
 
     // Remove existing query string from base URL
@@ -177,7 +177,7 @@ export default function APIPlayground({
       // Update URL when query parameters change
       const currentUrl = newConfig.url || ''
       if (!currentUrl.startsWith('curl')) {
-        const newUrl = buildUrlFromParams(currentUrl, query, newConfig.path || [])
+        const newUrl = buildUrlFromParams(currentUrl, query)
         return { ...newConfig, url: newUrl }
       }
       return newConfig
@@ -308,23 +308,7 @@ export default function APIPlayground({
     }
   }
 
-  const applyExampleConfig = (example: 'posts' | 'todos' | 'create') => {
-    const preset = example === 'posts' ? DUMMY_POSTS_TOOL_CONFIG :
-                  example === 'todos' ? DUMMY_TODOS_TOOL_CONFIG :
-                  CREATE_POST_EXAMPLE
-
-    setConfig(preset.config)
-  }
-
-  useEffect(() => {
-    const url = config.url
-
-    if (url?.startsWith('curl')) {
-      parseCurlCommand(url)
-    }
-  }, [config.url])
-
-  const parseCurlCommand = async (curlCommand: string) => {
+  const parseCurlCommand = useCallback(async (curlCommand: string) => {
     try {
       const response = await fetch('/api/parse-curl', {
         method: 'POST',
@@ -377,10 +361,26 @@ export default function APIPlayground({
     } catch (error) {
       console.error('Error parsing cURL command:', error)
     }
+  }, [config])
+
+  const applyExampleConfig = (example: 'posts' | 'todos' | 'create') => {
+    const preset = example === 'posts' ? DUMMY_POSTS_TOOL_CONFIG :
+                  example === 'todos' ? DUMMY_TODOS_TOOL_CONFIG :
+                  CREATE_POST_EXAMPLE
+
+    setConfig(preset.config)
   }
 
-  const getCleanConfig = () => {
-    const clean: any = {
+  useEffect(() => {
+    const url = config.url
+
+    if (url?.startsWith('curl')) {
+      parseCurlCommand(url)
+    }
+  }, [config.url, parseCurlCommand])
+
+  const getCleanConfig = (): CleanAPIConfig => {
+    const clean: CleanAPIConfig = {
       url: config.url,
       method: config.method
     }

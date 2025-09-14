@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ParsedCurlData } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,13 +26,13 @@ export async function POST(request: NextRequest) {
 }
 
 function parseCurlCommand(curlCommand: string) {
-  const result = {
+  const result: ParsedCurlData = {
     url: '',
     method: 'GET',
-    headers: {} as Record<string, string>,
-    data: undefined as Record<string, any> | undefined,
-    queryParams: {} as Record<string, string>,
-    pathParams: {} as Record<string, string>
+    headers: {},
+    data: undefined,
+    queryParams: {},
+    pathParams: {}
   }
 
   try {
@@ -91,10 +92,10 @@ function parseCurlCommand(curlCommand: string) {
 
     // Extract data/body - handles various formats
     const dataRegexes = [
-      /-d\s+['"](.+?)['"](?:\s|$)/s,        // -d "data"
-      /--data\s+['"](.+?)['"](?:\s|$)/s,    // --data "data"
-      /--data-raw\s+['"](.+?)['"](?:\s|$)/s, // --data-raw "data"
-      /--data-binary\s+['"](.+?)['"](?:\s|$)/s, // --data-binary "data"
+      /-d\s+['"](.+?)['"](?:\s|$)/,        // -d "data"
+      /--data\s+['"](.+?)['"](?:\s|$)/,    // --data "data"
+      /--data-raw\s+['"](.+?)['"](?:\s|$)/, // --data-raw "data"
+      /--data-binary\s+['"](.+?)['"](?:\s|$)/, // --data-binary "data"
     ]
 
     for (const regex of dataRegexes) {
