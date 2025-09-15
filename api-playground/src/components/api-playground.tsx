@@ -421,7 +421,7 @@ export default function APIPlayground({
     <ResizablePanelGroup direction="horizontal" className="h-full gap-4">
       {/* Left side - Configuration */}
       <ResizablePanel defaultSize={66} minSize={50}>
-        <div className="flex flex-col gap-4 h-full p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col gap-4 h-full p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700/40">
         <div className="flex flex-col sm:flex-row gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -450,11 +450,11 @@ export default function APIPlayground({
             placeholder="Enter API URL or paste cURL command"
             value={config.url}
             onChange={(e) => updateConfig('url', e.target.value)}
-            className="flex-1 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200 focus-visible:border-blue-500"
+            className="flex-1 h-10 bg-white/95 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-400/25"
           />
         </div>
 
-        <div className="flex gap-1 border-b border-gray-200">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
           {[
             { value: 'headers', label: 'Headers', supportedTab: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] },
             { value: 'path', label: 'Path', supportedTab: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] },
@@ -467,10 +467,10 @@ export default function APIPlayground({
                 key={t.value}
                 onClick={() => setActiveTab(t.value as TabType)}
                 className={cn(
-                  'px-4 py-3 text-sm font-medium border-b-2 -mb-[2px] transition-colors',
+                  'px-4 py-3 text-sm font-medium border-b-2 -mb-[2px] transition-colors rounded-t-md',
                   activeTab === t.value
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-blue-500 bg-white/60 dark:bg-neutral-800/60 text-blue-600 dark:text-blue-300'
+                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 )}
               >
                 {t.label}
@@ -485,21 +485,21 @@ export default function APIPlayground({
                 <div key={activeTabMapItem.id} className="flex items-center gap-3">
                   <Input
                     placeholder="Key"
-                    className="flex-1 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200 focus-visible:border-blue-500"
+                    className="flex-1 h-10 bg-white/95 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-400/25"
                     value={activeTabMapItem.key}
                     disabled={activeTab === 'path'}
                     onChange={(e) => updateActiveTabMapItem(activeTab as keyof typeof map, activeTabMapItem.id, 'key', e.target.value)}
                   />
                   <Input
                     placeholder="Value"
-                    className="flex-1 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200 focus-visible:border-blue-500"
+                    className="flex-1 h-10 bg-white/95 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-400/25"
                     value={activeTabMapItem.value}
                     onChange={(e) => updateActiveTabMapItem(activeTab as keyof typeof map, activeTabMapItem.id, 'value', e.target.value)}
                   />
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-10 w-10 rounded-md border border-red-200 text-red-500 hover:text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors flex-shrink-0"
+                    className="h-10 w-10 rounded-md border border-red-200/60 dark:border-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-50/30 dark:hover:bg-red-900/25 transition-colors flex-shrink-0"
                     onClick={() => removeActiveTabMapItem(activeTab as keyof typeof map, activeTabMapItem.id)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -526,18 +526,18 @@ export default function APIPlayground({
                     placeholder="Key"
                     value={bodyItem.key}
                     onChange={(e) => updateActiveTabMapItem('body', bodyItem.id, 'key', e.target.value)}
-                    className="flex-1 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200 focus-visible:border-blue-500"
+                    className="flex-1 h-10 bg-white/95 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-400/25"
                   />
                   <Input
                     placeholder="Value"
-                    className="flex-1 h-10 focus-visible:ring-0 focus-visible:ring-offset-0 border-gray-200 focus-visible:border-blue-500"
+                    className="flex-1 h-10 bg-white/95 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-400/25"
                     onChange={(e) => updateActiveTabMapItem('body', bodyItem.id, 'value', e.target.value)}
                     value={bodyItem.value}
                   />
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-md border border-red-200 text-red-500 hover:text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors flex-shrink-0"
+                    className="h-10 w-10 rounded-md border border-red-200/60 dark:border-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-50/30 dark:hover:bg-red-900/25 transition-colors flex-shrink-0"
                     onClick={() => removeActiveTabMapItem('body', bodyItem.id)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -558,7 +558,7 @@ export default function APIPlayground({
 
         </div>
 
-        <div className="flex gap-3 pt-6 border-t border-gray-200">
+        <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button disabled={loading} variant="outline" size="sm" className="h-10">
@@ -592,10 +592,10 @@ export default function APIPlayground({
           <ResizablePanelGroup direction="vertical" className="gap-4">
             {/* Configuration JSON - Top Half */}
             <ResizablePanel defaultSize={50} minSize={30}>
-              <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="h-full bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700/40">
                 <div className="p-4 h-full flex flex-col">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-700 border-b border-gray-100 pb-2">Configuration JSON</h3>
-                  <pre className="text-xs overflow-auto flex-1 bg-gray-50 rounded-lg p-4 text-gray-800 font-mono">
+                  <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800 pb-2">Configuration JSON</h3>
+                  <pre className="text-xs overflow-auto flex-1 bg-gray-50 dark:bg-neutral-950/50 rounded-lg p-4 text-gray-800 dark:text-gray-100 font-mono">
                     {JSON.stringify(getCleanConfig(), null, 2)}
                   </pre>
                 </div>
@@ -607,14 +607,14 @@ export default function APIPlayground({
               <>
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={50} minSize={30}>
-                  <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200">
+                  <div className="h-full bg-white dark:bg-gradient-to-br dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700/40">
                     <div className="p-4 h-full flex flex-col">
-                      <h3 className="text-sm font-semibold mb-3 text-gray-700 border-b border-gray-100 pb-2">Response JSON</h3>
-                      <pre className="text-xs overflow-auto flex-1 bg-gray-50 rounded-lg p-4 font-mono">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800 pb-2">Response JSON</h3>
+                      <pre className="text-xs overflow-auto flex-1 bg-gray-50 dark:bg-neutral-950/50 rounded-lg p-4 font-mono">
                         {config.rawResponse.error ? (
-                          <span className="text-red-600">{config.rawResponse.error}</span>
+                          <span className="text-red-700 dark:text-red-300 font-medium">{config.rawResponse.error}</span>
                         ) : (
-                          <span className="text-gray-800">{JSON.stringify(config.rawResponse.data, null, 2)}</span>
+                          <span className="text-gray-800 dark:text-gray-100">{JSON.stringify(config.rawResponse.data, null, 2)}</span>
                         )}
                       </pre>
                     </div>

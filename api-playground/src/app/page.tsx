@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import APIPlayground from '@/components/api-playground'
 import { APIConfig, APITestResponse, JSONObject } from '@/lib/types'
+import { Moon, Sun } from 'lucide-react'
 
 export default function Home() {
   const [config, setConfig] = useState<APIConfig>({
@@ -13,6 +14,23 @@ export default function Home() {
     path: [],
     body: []
   })
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  useEffect(() => {
+    // Check for saved theme preference or default to 'light'
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+    setTheme(initialTheme)
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    localStorage.setItem('theme', newTheme)
+    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+  }
 
 
   const handleTest = async (config: APIConfig): Promise<APITestResponse> => {
@@ -82,17 +100,30 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 transition-colors">
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">API Playground</h1>
-            <p className="text-gray-600">
-              Test and configure APIs with a clean, powerful interface
-            </p>
+          <div className="mb-8 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">API Playground</h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Test and configure APIs with a clean, powerful interface
+              </p>
+            </div>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? (
+                <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+              ) : (
+                <Sun className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+              )}
+            </button>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border p-4 h-[600px]">
+          <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 h-[600px]">
             <APIPlayground
               config={config}
               onConfigChange={setConfig}
