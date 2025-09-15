@@ -1,3 +1,29 @@
+# API Playground Component
+
+A comprehensive API testing and development tool built with React, TypeScript, and Tailwind CSS.
+
+## Features
+
+🚀 **Comprehensive API Testing**
+- Support for all HTTP methods (GET, POST, PUT, PATCH, DELETE)
+- Real-time parameter management (headers, query, path, body)
+- Bidirectional URL synchronization with parameters
+
+🎨 **Modern UI/UX**
+- Resizable panel layout with configuration and JSON preview
+- Clean, refined interface with consistent spacing
+- Focus states and accessibility support
+
+⚡ **Developer Experience**
+- cURL command parsing and auto-population
+- TypeScript-first with proper type definitions
+- CORS proxy for testing external APIs
+
+🔧 **Advanced Features**
+- Live JSON preview of configuration and responses
+- Error handling and status code display
+- Example configurations for quick testing
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
