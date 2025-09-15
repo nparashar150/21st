@@ -1,4 +1,4 @@
-import { APITool } from './types'
+import { APITool } from './types';
 
 export const DUMMY_POSTS_TOOL_CONFIG: Omit<APITool, 'tool_type'> = {
   name: 'get_posts',
@@ -22,7 +22,7 @@ export const DUMMY_POSTS_TOOL_CONFIG: Omit<APITool, 'tool_type'> = {
     path: [],
     body: []
   }
-}
+};
 
 export const DUMMY_TODOS_TOOL_CONFIG: Omit<APITool, 'tool_type'> = {
   name: 'get_todos',
@@ -44,9 +44,9 @@ export const DUMMY_TODOS_TOOL_CONFIG: Omit<APITool, 'tool_type'> = {
       }
     ],
     path: [],
-    body: [],
+    body: []
   }
-}
+};
 
 export const CREATE_POST_EXAMPLE: Omit<APITool, 'tool_type'> = {
   name: 'create_post',
@@ -78,6 +78,6 @@ export const CREATE_POST_EXAMPLE: Omit<APITool, 'tool_type'> = {
         key: 'userId',
         value: '1'
       }
-    ],
+    ]
   }
-}
+};
