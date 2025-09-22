@@ -95,6 +95,7 @@ export const useMediaSync = ({ mediaElement, onTimeUpdate, onEnded }: UseMediaSy
         setCurrentTime(project.duration);
         setIsPlaying(false);
         onEnded?.();
+        return; // Don't schedule next frame if ended
       } else {
         setCurrentTime(newTime);
         onTimeUpdate?.(newTime);

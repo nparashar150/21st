@@ -3,8 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useTimelineStore } from '@/lib/timeline-store';
-import { formatTime } from '@/utils/time-math';
-import { cn } from '@/lib/utils';
+import { cn, formatTime } from '@/lib/utils';
 import type { TrackItem } from '@/types/timeline';
 
 interface ClipTokenProps {

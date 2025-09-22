@@ -2,8 +2,7 @@
 
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTimelineStore } from '@/lib/timeline-store';
-import { cn } from '@/lib/utils';
-import { formatTime } from '@/utils/time-math';
+import { cn, formatTime } from '@/lib/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PlaybackControls } from './controls/PlaybackControls';
 import { TrackContainer } from './tracks/TrackContainer';

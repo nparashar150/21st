@@ -5,8 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { useTimelineStore } from '@/lib/timeline-store';
-import { formatTime } from '@/utils/time-math';
-import { cn } from '@/lib/utils';
+import { cn, formatTime } from '@/lib/utils';
 import { exampleTimeline } from '@/data/example-timeline';
 import { TimelineSettings } from './TimelineSettings';
 import {
