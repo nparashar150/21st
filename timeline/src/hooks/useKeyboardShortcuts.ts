@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTimelineStore } from '@/lib/timeline-store';
 import type { KeyboardShortcuts } from '@/types/timeline';
 
@@ -18,57 +18,63 @@ export const useKeyboardShortcuts = () => {
     setLoop,
   } = useTimelineStore();
 
-  const shortcuts: KeyboardShortcuts = {
-    'Space': useCallback(() => {
+  const shortcuts: KeyboardShortcuts = useMemo(() => ({
+    'Space': () => {
       setIsPlaying(!isPlaying);
-    }, [isPlaying, setIsPlaying]),
+    },
 
-    'ArrowLeft': useCallback(() => {
+    'ArrowLeft': () => {
       const nudgeAmount = 0.1;
       setCurrentTime(Math.max(0, currentTime - nudgeAmount));
-    }, [currentTime, setCurrentTime]),
+    },
 
-    'ArrowRight': useCallback(() => {
+    'ArrowRight': () => {
       const nudgeAmount = 0.1;
       setCurrentTime(Math.min(project.duration, currentTime + nudgeAmount));
-    }, [currentTime, setCurrentTime, project.duration]),
+    },
 
-    'Slash': useCallback(() => {
+    'Slash': () => {
       if (project.loop) {
         setLoop(undefined);
       } else if (project.selection) {
         setLoop(project.selection);
       }
-    }, [project.loop, project.selection, setLoop]),
+    },
 
-    'Equal': useCallback(() => {
+    'Equal': () => {
       const currentZoom = project.zoom.pxPerSec;
       const newZoom = Math.min(project.zoom.maxPxPerSec, currentZoom * 1.5);
       setZoom(newZoom);
-    }, [project.zoom, setZoom]),
+    },
 
-    'Minus': useCallback(() => {
+    'Minus': () => {
       const currentZoom = project.zoom.pxPerSec;
       const newZoom = Math.max(project.zoom.minPxPerSec, currentZoom / 1.5);
       setZoom(newZoom);
-    }, [project.zoom, setZoom]),
+    },
 
-    'Escape': useCallback(() => {
+    'Escape': () => {
       clearSelection();
-    }, [clearSelection]),
+    },
 
-    'Delete': useCallback(() => {
+    'Delete': () => {
       if (selectedItems.length > 0) {
         deleteItems(selectedItems);
       }
-    }, [selectedItems, deleteItems]),
+    },
 
-    'Backspace': useCallback(() => {
+    'Backspace': () => {
       if (selectedItems.length > 0) {
         deleteItems(selectedItems);
       }
-    }, [selectedItems, deleteItems]),
-  };
+    },
+  }), [
+    isPlaying, setIsPlaying,
+    currentTime, setCurrentTime,
+    project.duration, project.loop, project.selection, project.zoom,
+    setLoop, setZoom, clearSelection,
+    selectedItems, deleteItems
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

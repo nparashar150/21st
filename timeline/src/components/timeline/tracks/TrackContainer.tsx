@@ -1,19 +1,17 @@
 'use client';
 
-import { useRef, useCallback, useMemo } from 'react';
-import { ClipToken } from '../tokens/ClipToken';
 import { useTimelineStore } from '@/lib/timeline-store';
-import { timelineMath } from '@/utils/time-math';
 import { cn } from '@/lib/utils';
 import type { Track } from '@/types/timeline';
+import { useCallback, useMemo, useRef } from 'react';
+import { ClipToken } from '../tokens/ClipToken';
 
 interface TrackContainerProps {
   track: Track;
-  containerWidth: number;
   className?: string;
 }
 
-export const TrackContainer = ({ track, containerWidth, className }: TrackContainerProps) => {
+export const TrackContainer = ({ track, className }: TrackContainerProps) => {
   const trackRef = useRef<HTMLDivElement>(null);
   const {
     project,
@@ -57,14 +55,16 @@ export const TrackContainer = ({ track, containerWidth, className }: TrackContai
       if (!rect) return;
 
       const startX = event.clientX - rect.left;
-      const startTime = timelineMath.pxToTime(startX, pxPerSec, viewportStart * pxPerSec);
+      const scrollContainer = trackRef.current?.parentElement;
+      const scrollLeft = scrollContainer?.scrollLeft || 0;
+      const startTime = (startX + scrollLeft) / pxPerSec;
 
       let isSelecting = false;
-      let selectionStart = startTime;
+      const selectionStart = startTime;
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
         const currentX = moveEvent.clientX - rect.left;
-        const currentTime = timelineMath.pxToTime(currentX, pxPerSec, viewportStart * pxPerSec);
+        const currentTime = (currentX + scrollLeft) / pxPerSec;
 
         if (!isSelecting && Math.abs(currentX - startX) > 5) {
           isSelecting = true;
@@ -87,25 +87,9 @@ export const TrackContainer = ({ track, containerWidth, className }: TrackContai
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    [pxPerSec, viewportStart, setSelection, uiSettings.enableTimeSelection]
+    [pxPerSec, setSelection, uiSettings.enableTimeSelection]
   );
 
-  const getTrackTypeIcon = (type: Track['type']) => {
-    switch (type) {
-      case 'video':
-        return '🎥';
-      case 'audio':
-        return '🎵';
-      case 'transcript':
-        return '📝';
-      case 'markers':
-        return '📍';
-      case 'assets':
-        return '📁';
-      default:
-        return '📄';
-    }
-  };
 
   if (!track.visible) {
     return null;
@@ -134,9 +118,7 @@ export const TrackContainer = ({ track, containerWidth, className }: TrackContai
           <ClipToken
             key={item.id}
             item={item}
-            trackId={track.id}
             pxPerSec={pxPerSec}
-            viewportStart={viewportStart}
             trackHeight={track.height}
           />
         ))}
@@ -146,7 +128,7 @@ export const TrackContainer = ({ track, containerWidth, className }: TrackContai
           <div
             className="absolute top-0 bottom-0 bg-timeline-selection pointer-events-none border border-timeline-accent"
             style={{
-              left: `${timelineMath.timeToPx(project.selection.start, pxPerSec, viewportStart * pxPerSec)}px`,
+              left: `${project.selection.start * pxPerSec}px`,
               width: `${(project.selection.end - project.selection.start) * pxPerSec}px`,
             }}
           />
@@ -157,7 +139,7 @@ export const TrackContainer = ({ track, containerWidth, className }: TrackContai
           <div
             className="absolute top-0 bottom-0 border-2 border-timeline-accent border-dashed pointer-events-none"
             style={{
-              left: `${timelineMath.timeToPx(project.loop.start, pxPerSec, viewportStart * pxPerSec)}px`,
+              left: `${project.loop.start * pxPerSec}px`,
               width: `${(project.loop.end - project.loop.start) * pxPerSec}px`,
             }}
           />

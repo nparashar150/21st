@@ -3,24 +3,20 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useTimelineStore } from '@/lib/timeline-store';
-import { timelineMath, formatTime } from '@/utils/time-math';
+import { formatTime } from '@/utils/time-math';
 import { cn } from '@/lib/utils';
 import type { TrackItem } from '@/types/timeline';
 
 interface ClipTokenProps {
   item: TrackItem;
-  trackId: string;
   pxPerSec: number;
-  viewportStart: number;
   trackHeight: number;
   className?: string;
 }
 
 export const ClipToken = ({
   item,
-  trackId,
   pxPerSec,
-  viewportStart,
   trackHeight,
   className,
 }: ClipTokenProps) => {
@@ -33,7 +29,6 @@ export const ClipToken = ({
     selectedItems,
     selectItems,
     addToSelection,
-    clearSelection,
     moveItems,
     resizeItem,
     project,
@@ -44,7 +39,7 @@ export const ClipToken = ({
   const duration = item.end - item.start;
 
   // Calculate position and width
-  const left = timelineMath.timeToPx(item.start, pxPerSec, viewportStart * pxPerSec);
+  const left = item.start * pxPerSec;
   const width = Math.max(8, duration * pxPerSec);
 
   const handleMouseDown = useCallback(
@@ -192,11 +187,6 @@ export const ClipToken = ({
           "absolute left-0 top-0 bottom-0 w-2 cursor-col-resize opacity-0 hover:opacity-100 rounded-l",
           uiSettings.enableClipAnimations && "transition-opacity"
         )}
-        style={{
-          ':hover': {
-            backgroundColor: 'hsl(var(--timeline-playhead))',
-          },
-        }}
         onMouseDown={(e) => handleMouseDown(e, 'resize-start')}
       />
 
@@ -225,11 +215,6 @@ export const ClipToken = ({
           "absolute right-0 top-0 bottom-0 w-2 cursor-col-resize opacity-0 hover:opacity-100 rounded-r",
           uiSettings.enableClipAnimations && "transition-opacity"
         )}
-        style={{
-          ':hover': {
-            backgroundColor: 'hsl(var(--timeline-playhead))',
-          },
-        }}
         onMouseDown={(e) => handleMouseDown(e, 'resize-end')}
       />
     </div>

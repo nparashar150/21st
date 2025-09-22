@@ -192,17 +192,17 @@ export default function TimelineDemo() {
 
   // Initialize with sample data
   useEffect(() => {
-    const { project: currentProject, ...store } = useTimelineStore.getState();
+    const { project: currentProject } = useTimelineStore.getState();
 
     // Only initialize if we don't have tracks
     if (currentProject.tracks.length === 0) {
-      store.project = { ...currentProject, ...sampleData };
-      useTimelineStore.setState({ project: store.project });
+      const newProject = { ...currentProject, ...sampleData };
+      useTimelineStore.setState({ project: newProject });
     }
   }, []);
 
   // Media sync for demo (without actual media element)
-  const { seekTo, isPlaying, currentTime } = useMediaSync({
+  const { isPlaying, currentTime } = useMediaSync({
     onTimeUpdate: (time) => {
       console.log('Timeline time update:', time);
     },

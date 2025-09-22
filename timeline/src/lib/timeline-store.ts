@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { TimelineState, TimelineProject, TrackItem, TimeRange, UISettings } from '@/types/timeline';
-import { timelineMath } from '@/utils/time-math';
+import type { TimelineState, TimelineProject, TimeRange } from '@/types/timeline';
 
 interface TimelineActions {
   setCurrentTime: (time: number) => void;

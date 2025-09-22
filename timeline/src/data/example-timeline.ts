@@ -21,13 +21,9 @@ export const exampleTimeline: TimelineProject = {
       items: [
         {
           id: 'video-clip-1',
-          name: 'Intro Scene',
+          text: 'Intro Scene',
           start: 0,
           end: 15,
-          duration: 15,
-          type: 'video',
-          color: '#3b82f6', // blue
-          selected: false,
           properties: {
             volume: 1,
             fade: { in: 0.5, out: 0.5 },
@@ -38,10 +34,6 @@ export const exampleTimeline: TimelineProject = {
           name: 'Main Content',
           start: 15,
           end: 90,
-          duration: 75,
-          type: 'video',
-          color: '#3b82f6',
-          selected: false,
           properties: {
             volume: 1,
             fade: { in: 0.3, out: 1.0 },
@@ -52,10 +44,6 @@ export const exampleTimeline: TimelineProject = {
           name: 'Outro Scene',
           start: 90,
           end: 120,
-          duration: 30,
-          type: 'video',
-          color: '#3b82f6',
-          selected: false,
           properties: {
             volume: 1,
             fade: { in: 0, out: 2.0 },
@@ -77,10 +65,6 @@ export const exampleTimeline: TimelineProject = {
           name: 'Ambient Music',
           start: 5,
           end: 110,
-          duration: 105,
-          type: 'audio',
-          color: '#10b981', // green
-          selected: false,
           properties: {
             volume: 0.3,
             fade: { in: 2.0, out: 3.0 },
@@ -103,9 +87,6 @@ export const exampleTimeline: TimelineProject = {
           start: 14.5,
           end: 16,
           duration: 1.5,
-          type: 'audio',
-          color: '#f59e0b', // yellow
-          selected: false,
           properties: {
             volume: 0.8,
             fade: { in: 0, out: 0.2 },
@@ -117,9 +98,6 @@ export const exampleTimeline: TimelineProject = {
           start: 89,
           end: 91.5,
           duration: 2.5,
-          type: 'audio',
-          color: '#f59e0b',
-          selected: false,
           properties: {
             volume: 0.9,
             fade: { in: 0.1, out: 0.3 },
@@ -141,12 +119,8 @@ export const exampleTimeline: TimelineProject = {
           name: 'Welcome to our tutorial',
           start: 2,
           end: 5,
-          duration: 3,
-          type: 'transcript',
-          color: '#8b5cf6', // purple
-          selected: false,
           properties: {
-            text: 'Welcome to our tutorial',
+            name: 'Welcome to our tutorial',
             fontSize: 24,
             position: 'bottom',
           },
@@ -157,11 +131,8 @@ export const exampleTimeline: TimelineProject = {
           start: 15.5,
           end: 19,
           duration: 3.5,
-          type: 'transcript',
-          color: '#8b5cf6',
-          selected: false,
           properties: {
-            text: 'Today we will learn about creating timelines',
+            name: 'Today we will learn about creating timelines',
             fontSize: 24,
             position: 'bottom',
           },
@@ -171,12 +142,8 @@ export const exampleTimeline: TimelineProject = {
           name: 'Thank you for watching',
           start: 115,
           end: 118,
-          duration: 3,
-          type: 'transcript',
-          color: '#8b5cf6',
-          selected: false,
           properties: {
-            text: 'Thank you for watching!',
+            name: 'Thank you for watching!',
             fontSize: 24,
             position: 'bottom',
           },
@@ -198,12 +165,8 @@ export const exampleTimeline: TimelineProject = {
           start: 0,
           end: 0.1,
           duration: 0.1,
-          type: 'markers',
-          color: '#ef4444', // red
-          selected: false,
           properties: {
             label: 'Scene 1: Introduction',
-            color: '#ef4444',
           },
         },
         {
@@ -212,12 +175,8 @@ export const exampleTimeline: TimelineProject = {
           start: 15,
           end: 15.1,
           duration: 0.1,
-          type: 'markers',
-          color: '#ef4444',
-          selected: false,
           properties: {
             label: 'Scene 2: Main Content',
-            color: '#ef4444',
           },
         },
         {
@@ -226,18 +185,14 @@ export const exampleTimeline: TimelineProject = {
           start: 90,
           end: 90.1,
           duration: 0.1,
-          type: 'markers',
-          color: '#ef4444',
-          selected: false,
           properties: {
             label: 'Scene 3: Conclusion',
-            color: '#ef4444',
           },
         },
       ],
     },
   ],
-  selection: null,
+  selection: undefined,
   loop: {
     start: 15,
     end: 90,

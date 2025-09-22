@@ -8,7 +8,7 @@ interface UseMediaSyncOptions {
 }
 
 export const useMediaSync = ({ mediaElement, onTimeUpdate, onEnded }: UseMediaSyncOptions = {}) => {
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
 
   const {
@@ -17,7 +17,6 @@ export const useMediaSync = ({ mediaElement, onTimeUpdate, onEnded }: UseMediaSy
     currentTime,
     setCurrentTime,
     project,
-    setPlaybackSpeed,
   } = useTimelineStore();
 
   // Sync timeline playback with media element
@@ -30,7 +29,7 @@ export const useMediaSync = ({ mediaElement, onTimeUpdate, onEnded }: UseMediaSy
     } else {
       mediaElement.pause();
     }
-  }, [isPlaying, mediaElement]);
+  }, [isPlaying, mediaElement, currentTime]);
 
   // Sync playback speed
   useEffect(() => {

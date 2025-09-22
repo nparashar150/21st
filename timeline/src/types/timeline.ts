@@ -27,6 +27,7 @@ export interface Track {
   color?: string;
   muted?: boolean;
   solo?: boolean;
+  locked?: boolean;
 }
 
 export type TrackType = 'video' | 'audio' | 'transcript' | 'markers' | 'assets';
@@ -36,10 +37,14 @@ export interface TrackItem {
   start: number;
   end: number;
   text?: string;
+  name?: string;
   speaker?: string;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   selected?: boolean;
   type?: string;
+  duration?: number;
+  color?: string;
+  properties?: Record<string, unknown>;
 }
 
 export interface TimeRange {
