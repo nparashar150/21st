@@ -86,7 +86,7 @@ export const useTimelineStore = create<TimelineState & TimelineActions>()(
 
     // UI Settings
     uiSettings: {
-      enableTimeSelection: true,
+      enableTimeSelection: false,
       enablePlayheadSync: true,
       enableClipAnimations: false,
     },

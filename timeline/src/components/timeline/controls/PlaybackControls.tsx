@@ -42,6 +42,7 @@ export const PlaybackControls = ({ className }: PlaybackControlsProps) => {
     undoStack,
     redoStack,
     loadProject,
+    uiSettings,
   } = useTimelineStore();
 
   const handlePlayPause = () => {
@@ -138,13 +139,28 @@ export const PlaybackControls = ({ className }: PlaybackControlsProps) => {
 
         <Separator orientation="vertical" className="h-6" />
 
-        <Button
-          variant={project.loop ? 'default' : 'ghost'}
-          size="sm"
-          onClick={handleToggleLoop}
-        >
-          <Repeat className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={project.loop ? 'default' : 'ghost'}
+              size="sm"
+              onClick={handleToggleLoop}
+              disabled={!uiSettings.enableTimeSelection}
+            >
+              <Repeat className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              {!uiSettings.enableTimeSelection
+                ? 'Enable Time Selection in settings to use loop'
+                : project.loop
+                  ? 'Disable loop'
+                  : 'Loop selected time range'
+              }
+            </p>
+          </TooltipContent>
+        </Tooltip>
 
         <Button
           variant={project.settings.snapToGrid ? 'default' : 'ghost'}
