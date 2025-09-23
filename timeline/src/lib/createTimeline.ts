@@ -1,8 +1,52 @@
-// createTimeline.js
-// Usage: createTimeline({ complexity: 3, duration: 300, seed: 42 })
-function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = {}) {
+// Simple interfaces that match the working example format
+interface TimelineItem {
+  id: string;
+  name: string;
+  start: number;
+  end: number;
+  duration: number;
+  type: string;
+  color: string;
+  properties?: Record<string, unknown>;
+}
+
+interface TimelineTrack {
+  id: string;
+  name: string;
+  type: 'video' | 'audio' | 'transcript' | 'markers' | 'assets';
+  height: number;
+  visible: boolean;
+  items: TimelineItem[];
+}
+
+interface TimelineData {
+  duration: number;
+  metadata: {
+    title: string;
+    created: string;
+    version: string;
+    project: {
+      resolution: string;
+      frameRate: number;
+      audioSampleRate: string;
+    };
+  };
+  tracks: TimelineTrack[];
+}
+
+interface CreateTimelineOptions {
+  complexity?: number;
+  duration?: number;
+  seed?: number;
+}
+
+export function createTimeline({
+  complexity = 2,
+  duration = 300,
+  seed = Date.now()
+}: CreateTimelineOptions = {}): TimelineData {
   // clamp complexity 0..5 (0 = tiny, 5 = very complex)
-  complexity = Math.max(0, Math.min(5, complexity | 0));
+  complexity = Math.max(0, Math.min(5, Math.floor(complexity)));
   const rand = mulberry32(seed);
 
   const base = {
@@ -11,27 +55,31 @@ function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = 
       title: `Generated Timeline (complexity ${complexity})`,
       created: new Date().toISOString(),
       version: "auto-1",
-      project: { resolution: "3840x2160", frameRate: 30, audioSampleRate: "48kHz" },
+      project: {
+        resolution: "3840x2160",
+        frameRate: 30,
+        audioSampleRate: "48kHz"
+      },
     },
   };
 
   // template track types with weight influenced by complexity
   const trackPresets = [
-    { id: "video", name: "Video", weight: 3 },
-    { id: "audio", name: "Audio", weight: 2 },
-    { id: "assets", name: "Graphics", weight: 1 },
-    { id: "transcript", name: "Captions", weight: 1 },
-    { id: "markers", name: "Markers", weight: 0.5 },
+    { id: "video" as const, name: "Video", weight: 3 },
+    { id: "audio" as const, name: "Audio", weight: 2 },
+    { id: "assets" as const, name: "Graphics", weight: 1 },
+    { id: "transcript" as const, name: "Captions", weight: 1 },
+    { id: "markers" as const, name: "Markers", weight: 0.5 },
   ];
 
   // how many distinct tracks: base 3 + complexity
   const trackCount = Math.max(1, 3 + complexity);
-  const tracks = [];
+  const tracks: TimelineTrack[] = [];
 
   // helper to pick color palette
   const colors = ["#818cf8","#a5b4fc","#34d399","#6ee7b7","#fbbf24","#a78bfa","#c084fc","#f87171"];
   const pickColor = () => colors[Math.floor(rand()*colors.length)];
-  const makeId = (prefix) => `${prefix}-${Math.floor(rand()*1e6).toString(36)}`;
+  const makeId = (prefix: string) => `${prefix}-${Math.floor(rand()*1e6).toString(36)}`;
 
   // content libraries for realistic names
   const videoNames = [
@@ -72,7 +120,7 @@ function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = 
     const itemsCount = Math.max(2, baseItems + Math.floor(rand()*3));
 
     // generate items with variable durations and gaps - NO OVERLAPS
-    const items = [];
+    const items: TimelineItem[] = [];
     let cursor = parseFloat((rand() * Math.min(2, duration*0.01)).toFixed(2)); // smaller lead-in
 
     for (let i = 0; i < itemsCount; i++) {
@@ -96,7 +144,7 @@ function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = 
       const end = parseFloat((start + itemDuration).toFixed(2));
 
       // Pick realistic names based on track type
-      let itemName;
+      let itemName: string;
       if (trackType === "video") {
         itemName = videoNames[Math.floor(rand() * videoNames.length)];
       } else if (trackType === "audio") {
@@ -105,7 +153,7 @@ function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = 
         itemName = `${capitalize(trackType)} ${i+1}`;
       }
 
-      const item = {
+      const item: TimelineItem = {
         id: makeId(trackType),
         name: `${itemName} ${i > 0 ? (i+1) : ''}`.trim(),
         start,
@@ -172,27 +220,17 @@ function createTimeline({ complexity = 2, duration = 300, seed = Date.now() } = 
     });
   }
 
-  // Calculate actual duration based on the maximum end time across all tracks
-  let actualDuration = 0;
-  tracks.forEach(track => {
-    track.items.forEach(item => {
-      if (item.end > actualDuration) {
-        actualDuration = item.end;
-      }
-    });
-  });
-
-  // Update the duration to match actual content
+  // Use the target duration - content should fill most of it
   return {
     ...base,
-    duration: parseFloat(actualDuration.toFixed(2)),
+    duration: parseFloat(duration.toFixed(2)),
     tracks
   };
 }
 
 /* ---------------- helpers ---------------- */
 
-function mulberry32(a) {
+function mulberry32(a: number) {
   return function() {
     let t = a += 0x6D2B79F5;
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -201,7 +239,7 @@ function mulberry32(a) {
   };
 }
 
-function defaultPropertiesFor(type, complexity, rand, captionTexts) {
+function defaultPropertiesFor(type: string, complexity: number, rand: () => number, captionTexts: string[]): Record<string, unknown> {
   if (type === "video") {
     return {
       volume: parseFloat((0.8 + rand()*0.2).toFixed(2)),
@@ -276,8 +314,6 @@ function defaultPropertiesFor(type, complexity, rand, captionTexts) {
   return {};
 }
 
-function capitalize(s) {
+function capitalize(s: string): string {
   return typeof s === "string" ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }
-
-module.exports = { createTimeline };

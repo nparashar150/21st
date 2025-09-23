@@ -1,292 +1,288 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Timeline } from '@/components/timeline/Timeline';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { useTimelineStore } from '@/lib/timeline-store';
-import { useMediaSync } from '@/hooks/useMediaSync';
-
-// Sample data for demonstration
-const sampleData = {
-  projectId: 'demo-project',
-  duration: 120, // 2 minutes
-  zoom: {
-    pxPerSec: 100,
-    minPxPerSec: 10,
-    maxPxPerSec: 1000,
-  },
-  tracks: [
-    {
-      id: 'video-1',
-      type: 'video' as const,
-      name: 'Main Video',
-      visible: true,
-      height: 80,
-      items: [
-        {
-          id: 'video-clip-1',
-          start: 0,
-          end: 30,
-          text: 'Introduction Scene',
-          meta: { src: '/demo-video.mp4' },
-        },
-        {
-          id: 'video-clip-2',
-          start: 35,
-          end: 65,
-          text: 'Main Content',
-          meta: { src: '/demo-video-2.mp4' },
-        },
-        {
-          id: 'video-clip-3',
-          start: 70,
-          end: 120,
-          text: 'Conclusion',
-          meta: { src: '/demo-video-3.mp4' },
-        },
-      ],
-    },
-    {
-      id: 'audio-1',
-      type: 'audio' as const,
-      name: 'Background Music',
-      visible: true,
-      height: 60,
-      items: [
-        {
-          id: 'audio-clip-1',
-          start: 0,
-          end: 120,
-          text: 'Ambient Music Track',
-          meta: { src: '/background-music.mp3', volume: 0.3 },
-        },
-      ],
-    },
-    {
-      id: 'transcript-1',
-      type: 'transcript' as const,
-      name: 'Transcript',
-      visible: true,
-      height: 40,
-      items: [
-        {
-          id: 'word-1',
-          start: 2,
-          end: 2.5,
-          text: 'Welcome',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-2',
-          start: 2.5,
-          end: 2.8,
-          text: 'to',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-3',
-          start: 2.8,
-          end: 3.2,
-          text: 'our',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-4',
-          start: 3.2,
-          end: 3.8,
-          text: 'timeline',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-5',
-          start: 3.8,
-          end: 4.3,
-          text: 'demo.',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-6',
-          start: 36,
-          end: 36.4,
-          text: 'This',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-7',
-          start: 36.4,
-          end: 36.7,
-          text: 'is',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-8',
-          start: 36.7,
-          end: 37.0,
-          text: 'the',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-9',
-          start: 37.0,
-          end: 37.4,
-          text: 'main',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-10',
-          start: 37.4,
-          end: 37.9,
-          text: 'content',
-          speaker: 'Narrator',
-        },
-        {
-          id: 'word-11',
-          start: 37.9,
-          end: 38.4,
-          text: 'section.',
-          speaker: 'Narrator',
-        },
-      ],
-    },
-    {
-      id: 'markers-1',
-      type: 'markers' as const,
-      name: 'Chapter Markers',
-      visible: true,
-      height: 30,
-      items: [
-        {
-          id: 'marker-1',
-          start: 0,
-          end: 0.1,
-          text: 'Intro',
-          type: 'chapter',
-        },
-        {
-          id: 'marker-2',
-          start: 35,
-          end: 35.1,
-          text: 'Main Content',
-          type: 'chapter',
-        },
-        {
-          id: 'marker-3',
-          start: 70,
-          end: 70.1,
-          text: 'Conclusion',
-          type: 'chapter',
-        },
-      ],
-    },
-  ],
-  playhead: 0,
-  settings: {
-    snapToGrid: true,
-    snapTolerance: 0.1,
-    playbackSpeed: 1,
-  },
-};
+import { Button } from '@/components/ui/button';
+import { Timeline, TimelineTrack } from '@/components/ui/timeline';
+import { createTimeline } from '@/lib/createTimeline';
+import { Github, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function TimelineDemo() {
-  const { project } = useTimelineStore();
+  const [tracks, setTracks] = useState<TimelineTrack[]>([
+    {
+      id: 'empty-video',
+      name: 'Video Track',
+      type: 'video',
+      height: 60,
+      visible: true,
+      items: [],
+    },
+    {
+      id: 'empty-audio',
+      name: 'Audio Track',
+      type: 'audio',
+      height: 60,
+      visible: true,
+      items: [],
+    },
+  ]);
+  const [duration, setDuration] = useState(30);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isLoadingExample, setIsLoadingExample] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Initialize with sample data
   useEffect(() => {
-    const { project: currentProject } = useTimelineStore.getState();
-
-    // Only initialize if we don't have tracks
-    if (currentProject.tracks.length === 0) {
-      const newProject = { ...currentProject, ...sampleData };
-      useTimelineStore.setState({ project: newProject });
-    }
+    // Check for saved theme preference or default to 'light'
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
   }, []);
 
-  // Media sync for demo (without actual media element)
-  const { isPlaying, currentTime } = useMediaSync({
-    onTimeUpdate: (time) => {
-      console.log('Timeline time update:', time);
-    },
-    onEnded: () => {
-      console.log('Timeline playback ended');
-    },
-  });
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+  const handleLoadExample = () => {
+    setIsLoadingExample(true);
+
+    // Generate random timeline with at least 4 tracks
+    const randomComplexity = Math.max(2, Math.floor(Math.random() * 6)); // 2-5 to ensure min 4 tracks
+    const randomDuration = 60 + Math.random() * 240; // 60-300 seconds
+    const randomSeed = Math.floor(Math.random() * 1000000);
+
+    const generatedTimeline = createTimeline({
+      complexity: randomComplexity,
+      duration: randomDuration,
+      seed: randomSeed
+    });
+
+    setTracks(generatedTimeline.tracks);
+    setDuration(generatedTimeline.duration);
+    setCurrentTime(0);
+    setIsLoadingExample(false);
+  };
+
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
-        <div className="container mx-auto px-6 py-4">
+      {/* Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Timeline UI</h1>
-              <p className="text-sm text-muted-foreground">
-                Professional multi-track timeline editor
+              <h1 className="text-2xl font-bold">Interactive Timeline Component</h1>
+              <p className="text-muted-foreground mt-1">
+                Professional video editing timeline with tracks, clips, and advanced controls
               </p>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-3">
+              <Button asChild className="gap-2">
+                <a
+                  href="https://github.com/nparashar150/21st"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Github className="h-4 w-4" />
+                  View on GitHub
+                </a>
+              </Button>
+              <Button size="icon" variant="secondary" onClick={toggleTheme} aria-label="Toggle theme">
+                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="rounded-lg border bg-card p-6">
-            <h2 className="text-lg font-semibold mb-4">Quick Start</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div>
-                <h3 className="font-medium mb-2">Keyboard Shortcuts:</h3>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs">Space</kbd>
-                    <span className="text-muted-foreground">Play/Pause</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs">←/→</kbd>
-                    <span className="text-muted-foreground">Nudge playhead</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs">+/-</kbd>
-                    <span className="text-muted-foreground">Zoom in/out</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Mouse Interactions:</h3>
-                <div className="space-y-1.5 text-muted-foreground">
-                  <div>• Click ruler to seek to time</div>
-                  <div>• Drag clips to reposition</div>
-                  <div>• Drag clip edges to resize</div>
-                  <div>• Drag empty space to select region</div>
-                </div>
+      {/* Demo Section */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="space-y-8">
+          {/* Timeline Demo */}
+          <section>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Live Demo</h2>
+              <p className="text-muted-foreground">
+                Click &quot;Generate Random&quot; in the timeline controls to create a procedural timeline with multiple tracks, or use the empty tracks to explore the interface.
+              </p>
+            </div>
+
+            <Timeline
+              tracks={tracks}
+              duration={duration}
+              height={600}
+              onTimeUpdate={setCurrentTime}
+              onTracksChange={setTracks}
+              onDurationChange={setDuration}
+              showLoadExample={true}
+              onLoadExample={handleLoadExample}
+              isLoadingExample={isLoadingExample}
+              className="border-2"
+            />
+
+            <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+              <div className="text-sm text-muted-foreground">
+                <strong>Current Time:</strong> {currentTime.toFixed(2)}s
               </div>
             </div>
-          </div>
+          </section>
 
-          <Timeline height={500} />
-
-          <div className="rounded-lg border bg-card p-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-green-500' : 'bg-gray-400'}`} />
-                <span className="text-muted-foreground">
-                  {isPlaying ? 'Playing' : 'Paused'}
-                </span>
+          {/* Features */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Key Features</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">🎬 Multi-Track Support</h3>
+                <p className="text-sm text-muted-foreground">
+                  Support for video, audio, transcript, markers, and asset tracks with customizable heights.
+                </p>
               </div>
-              <div>
-                <span className="text-muted-foreground">Time: </span>
-                <span className="font-mono">
-                  {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(1).padStart(4, '0')}
-                </span>
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">⚡ Interactive Playhead</h3>
+                <p className="text-sm text-muted-foreground">
+                  Click-to-seek and drag-to-scrub functionality with precise time control.
+                </p>
               </div>
-              <div>
-                <span className="text-muted-foreground">Zoom: </span>
-                <span>{project.zoom.pxPerSec}px/s</span>
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">🔍 Zoom & Pan</h3>
+                <p className="text-sm text-muted-foreground">
+                  Smooth zooming from 10px/s to 1000px/s with horizontal scrolling.
+                </p>
               </div>
-              <div>
-                <span className="text-muted-foreground">Tracks: </span>
-                <span>{project.tracks.filter(t => t.visible).length}</span>
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">🎯 Time Selection</h3>
+                <p className="text-sm text-muted-foreground">
+                  Optional click-and-drag time range selection with loop functionality.
+                </p>
+              </div>
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">⚙️ Customizable Settings</h3>
+                <p className="text-sm text-muted-foreground">
+                  Toggle features like animations, auto-scroll, and selection tools.
+                </p>
+              </div>
+              <div className="p-6 border rounded-lg bg-card">
+                <h3 className="font-semibold mb-2">🎨 Theme Support</h3>
+                <p className="text-sm text-muted-foreground">
+                  Full light/dark mode support with shadcn/ui components.
+                </p>
               </div>
             </div>
-          </div>
+          </section>
+
+          {/* Usage Example */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Usage Example</h2>
+            <div className="bg-muted/50 rounded-lg p-6">
+              <pre className="text-sm overflow-x-auto">
+{`import { Timeline } from '@/components/timeline/Timeline';
+import { useTimelineStore } from '@/lib/timeline-store';
+
+export function VideoEditor() {
+  const { project, loadProject } = useTimelineStore();
+
+  const handleLoadExample = async () => {
+    const response = await fetch('/api/timeline-data');
+    const data = await response.json();
+    loadProject(data);
+  };
+
+  return (
+    <Timeline
+      tracks={project.tracks}
+      duration={project.duration}
+      height={600}
+      onTimeUpdate={(time) => console.log('Current time:', time)}
+      showLoadExample={true}
+      onLoadExample={handleLoadExample}
+    />
+  );
+}`}
+              </pre>
+            </div>
+          </section>
+
+          {/* Props Documentation */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Props</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border rounded-lg">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-left p-3 border-b font-semibold">Prop</th>
+                    <th className="text-left p-3 border-b font-semibold">Type</th>
+                    <th className="text-left p-3 border-b font-semibold">Required</th>
+                    <th className="text-left p-3 border-b font-semibold">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">tracks</td>
+                    <td className="p-3 border-b text-sm">TimelineTrack[]</td>
+                    <td className="p-3 border-b text-sm">Yes</td>
+                    <td className="p-3 border-b text-sm">Array of timeline tracks with items</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">duration</td>
+                    <td className="p-3 border-b text-sm">number</td>
+                    <td className="p-3 border-b text-sm">Yes</td>
+                    <td className="p-3 border-b text-sm">Total timeline duration in seconds</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">className</td>
+                    <td className="p-3 border-b text-sm">string</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Additional CSS classes</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">height</td>
+                    <td className="p-3 border-b text-sm">number</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Timeline height in pixels (default: 600)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">onTimeUpdate</td>
+                    <td className="p-3 border-b text-sm">(time: number) =&gt; void</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Callback when playhead time changes</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">onTracksChange</td>
+                    <td className="p-3 border-b text-sm">(tracks: TimelineTrack[]) =&gt; void</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Callback when tracks are modified</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">onDurationChange</td>
+                    <td className="p-3 border-b text-sm">(duration: number) =&gt; void</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Callback when timeline duration changes</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">showLoadExample</td>
+                    <td className="p-3 border-b text-sm">boolean</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Show load example button (default: false)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-mono text-sm">onLoadExample</td>
+                    <td className="p-3 border-b text-sm">() =&gt; void</td>
+                    <td className="p-3 border-b text-sm">No</td>
+                    <td className="p-3 border-b text-sm">Callback when load example button is clicked</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">isLoadingExample</td>
+                    <td className="p-3 text-sm">boolean</td>
+                    <td className="p-3 text-sm">No</td>
+                    <td className="p-3 text-sm">Whether example data is currently loading (default: false)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </main>
     </div>
