@@ -1,1 +1,10 @@
 .pnpm-store/
+node_modules/
+.next/
+dist/
+build/
+*.log
+.DS_Store
+packages/*/pnpm-lock.yaml
+**/node_modules/**
+**/.next/**

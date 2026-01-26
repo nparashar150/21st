@@ -1,0 +1,15 @@
+{
+  "name": "21st-components",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter preview dev",
+    "build": "pnpm --filter preview build",
+    "build:all": "pnpm -r --filter './packages/*' build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
