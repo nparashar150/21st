@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from './button';
-import { Checkbox } from './checkbox';
-import { Label } from './label';
-import { Separator } from './separator';
-import { Slider } from './slider';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
-import { cn, formatTime } from '../../lib/utils';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
+import { Slider } from './ui/slider';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { cn, formatTime } from '../lib/utils';
 import {
     Shuffle,
     Grid3X3,

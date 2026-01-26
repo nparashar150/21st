@@ -1,4 +1,4 @@
-export { QueryBuilder, default } from './component';
+export { QueryBuilder, default } from './src/components/query-builder';
 export type {
   Combinator,
   OperatorType,
@@ -7,4 +7,4 @@ export type {
   Field,
   Rule,
   RuleGroup
-} from './component';
+} from './src/components/query-builder/types';
