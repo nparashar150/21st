@@ -44,7 +44,7 @@ export default function QueryBuilderDemo() {
           Build complex queries with drag-and-drop support, multiple field types, and nested rule groups.
         </p>
         <div className='rounded-lg border border-border bg-background p-4'>
-          <QueryBuilder fields={DEMO_FIELDS} query={query} onChange={setQuery} />
+          <QueryBuilder fields={DEMO_FIELDS} value={query} onChange={setQuery} />
         </div>
         {query && (
           <div className='mt-4 p-4 bg-muted rounded-lg'>

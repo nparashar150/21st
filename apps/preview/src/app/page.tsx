@@ -23,20 +23,6 @@ function cn(...inputs: (string | undefined | null | boolean)[]) {
   return inputs.filter(Boolean).join(' ');
 }
 
-function Button({ className, children, onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      className={cn(
-        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 outline-none cursor-pointer border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2',
-        className
-      )}
-      onClick={onClick}
-      {...props}>
-      {children}
-    </button>
-  );
-}
-
 function IconButton({ className, children, onClick, href, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { href?: string }) {
   const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 outline-none cursor-pointer hover:bg-accent hover:text-accent-foreground h-9 w-9 p-0';
   
@@ -47,7 +33,7 @@ function IconButton({ className, children, onClick, href, ...props }: React.Butt
         target="_blank"
         rel="noopener noreferrer"
         className={cn(baseClasses, className)}
-        {...(props as any)}>
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
         {children}
       </a>
     );

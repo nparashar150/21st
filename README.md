@@ -77,6 +77,21 @@ A scalable monorepo for 21st.dev UI components built with pnpm workspaces.
    - Create demo component in `apps/preview/src/components/preview/`
    - Add tab to `apps/preview/src/app/page.tsx`
 
+## Installing Components
+
+To use these components in your own project, see [INSTALLATION.md](./INSTALLATION.md) for detailed instructions.
+
+**Quick Start (Manual):**
+1. Copy component files from `packages/{component}/` to your project
+2. Install dependencies (see component's `package.json`)
+3. Extract UI components to `components/ui/`
+4. Update import paths and Tailwind config
+
+**Coming Soon:** CLI tool for automated installation:
+```bash
+npx @21st-dev/cli add ai-writer
+```
+
 ## Architecture Benefits
 
 - **Scalable**: Easy to add 100+ components

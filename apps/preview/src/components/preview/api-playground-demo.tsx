@@ -43,16 +43,14 @@ export default function APIPlaygroundDemo() {
 
       const data = await response.json();
       return {
-        status: response.status,
-        statusText: response.statusText,
-        data,
+        status_code: response.status,
+        response: data,
         headers: Object.fromEntries(response.headers.entries())
       };
     } catch (error) {
       return {
-        status: 0,
-        statusText: 'Error',
-        data: { error: error instanceof Error ? error.message : 'Unknown error' },
+        status_code: 0,
+        response: { error: error instanceof Error ? error.message : 'Unknown error' },
         headers: {}
       };
     }

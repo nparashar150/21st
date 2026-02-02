@@ -23,7 +23,6 @@ export default function TimelineDemo() {
     }
   ]);
   const [duration, setDuration] = useState(30);
-  const [currentTime, setCurrentTime] = useState(0);
   const [isLoadingExample, setIsLoadingExample] = useState(false);
 
   const handleLoadExample = () => {
@@ -40,7 +39,6 @@ export default function TimelineDemo() {
 
     setTracks(generatedTimeline.tracks);
     setDuration(generatedTimeline.duration);
-    setCurrentTime(0);
     setIsLoadingExample(false);
   };
 
@@ -65,8 +63,6 @@ export default function TimelineDemo() {
           <Timeline
             tracks={tracks}
             duration={duration}
-            currentTime={currentTime}
-            onTimeChange={setCurrentTime}
             onTracksChange={setTracks}
             onDurationChange={setDuration}
           />

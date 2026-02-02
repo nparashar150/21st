@@ -6,7 +6,7 @@ import { AIWriter } from '@21st/ai-writer';
 export default function AIWriterDemo() {
   const [content, setContent] = useState('');
 
-  const handleAIAction = async (action: string, prompt: string): Promise<string> => {
+  const handleAIAction = async (action: string): Promise<string> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const responses: Record<string, string> = {
@@ -26,7 +26,7 @@ export default function AIWriterDemo() {
       <div className='rounded-lg border border-border bg-card p-6'>
         <h2 className='text-xl font-semibold mb-4 text-foreground'>AI Writer</h2>
         <p className='text-sm text-muted-foreground mb-4'>
-          A powerful rich text editor with AI capabilities built with Tiptap. Try typing '/' for commands or selecting text for formatting options!
+          A powerful rich text editor with AI capabilities built with Tiptap. Try typing &apos;/&apos; for commands or selecting text for formatting options!
         </p>
         <div className='rounded-lg border border-border bg-background'>
           <AIWriter
